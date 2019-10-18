@@ -1,7 +1,6 @@
 package com.inderjit.portal.user;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.inderjit.portal.signon.InderjitPortalSignon;
@@ -52,27 +50,4 @@ public class UserControllerTest {
 		}
 		assertNotNull(user);
 	}
-
-	@Test
-	public void getValidUserDetails() {
-		UserDetails user= null;
-		try {
-			user = userService.loadUserByUsername("TEST");			
-		} catch (Exception e) {
-			
-		}
-		assertNotNull(user);
-	}
-
-	@Test
-	public void getInValidUserDetails() {
-		UserDetails user= null;
-		try {
-			user = userService.loadUserByUsername("TEST1");			
-		} catch (Exception e) {
-			
-		}
-		assertNull(user);
-	}
-
 }

@@ -4,13 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,13 +17,14 @@ import com.inderjit.portal.signon.repository.SignonRepository;
 import com.inderjit.portal.signon.vo.Signon;
 
 @Service
-public class SignonService implements UserDetailsService {
-
+public class SignonService {
+	static Logger logger = Logger.getLogger(SignonService.class);
+	
 	@Autowired
 	private SignonRepository userRepository;
-	
+
 	static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	 
+
 	public List<Signon> getAllUsers(Pageable pageable) {
 		List<Signon> signonList = userRepository.getAllUsers(pageable);
 		if (!signonList.isEmpty()) {
@@ -41,6 +39,7 @@ public class SignonService implements UserDetailsService {
 		if (!user.equals(null)) {
 			return user;
 		} else {
+			if (logger.isEnabled(Level.INFO)) logger.info("User Not Found : " + signonName);			
 			throw new RecordNotFoundException("User Not Found : " + signonName);
 		}
 	}
@@ -50,6 +49,7 @@ public class SignonService implements UserDetailsService {
 		if (user.isPresent()) {
 			return user.get();
 		} else {
+			if (logger.isEnabled(Level.ERROR)) logger.error("User Not Found with ID : " + id);			
 			throw new RecordNotFoundException("User Not Found with ID : " + id);
 		}
 	}
@@ -75,37 +75,9 @@ public class SignonService implements UserDetailsService {
 		if (user.isPresent()) {
 			userRepository.deleteById(id);
 		} else {
-			throw new RecordNotFoundException("User Not Found with ID : " + id);
+			if (logger.isEnabled(Level.INFO)) logger.info("User Not to Delete: " + id);
+			throw new RecordNotFoundException("User Not Found to Delete : " + id);
 		}
 	}
 
-	@Override
-	public UserDetails loadUserByUsername(String signOnName) throws UsernameNotFoundException {
-		System.out.println("Load User: " + signOnName);
-		User user=null;
-		try {
-			Signon signon = userRepository.getUserBySignon(signOnName, "");
-			if (signon.equals(null)) {
-				throw new UsernameNotFoundException("User Not Found : " + signOnName);
-			}
-			List<SimpleGrantedAuthority> authList = getAuthorities(signon.getSignonRole());
-	        user = new User(signon.getSignOn(), signon.getSignonPassword(), authList);			
-		} catch (Exception ex) {
-
-		}
-		return user;
-	}
-
-	private List<SimpleGrantedAuthority> getAuthorities(String role) {
-        List<SimpleGrantedAuthority> authList = new ArrayList<>();
-        authList.add(new SimpleGrantedAuthority("ROLE_USER"));
- 
-        if (!role.isEmpty() && role.trim().length() > 0) {
-            if (role.equalsIgnoreCase("admin")) {
-                authList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            }
-        }
- 
-        return authList;
-    }
 }
