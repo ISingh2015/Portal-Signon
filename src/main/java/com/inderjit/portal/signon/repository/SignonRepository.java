@@ -12,10 +12,10 @@ import com.inderjit.portal.signon.vo.Signon;
 @Repository
 public interface SignonRepository extends JpaRepository<Signon, Long> {
 	
-	@Query ("FROM Signon") 
+	@Query ("FROM Signon s where s.signonActive=1") 
 	List<Signon> getAllUsers (Pageable pageable);
 	
-	@Query ("select s from Signon s where s.signOn = ?1 or s.mobileNo = ?2") 
+	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1 or s.mobileNo = ?2)") 
 	Signon getUserBySignon (String userName, String mobileNo);
 	
 }

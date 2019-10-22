@@ -32,7 +32,7 @@ public class PortalSignonController {
 	@Autowired
 	SignonService userService;
 
-	@ApiOperation(value="Get a List of registered Users on the Portal.", response=List.class, tags="Get All Users")
+	@ApiOperation(value="Get a List of Users on the Portal.", response=List.class, tags="Get All Users")
 	@GetMapping("getAll")
 	public ResponseEntity<List<Signon>> getAllUsers(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
 			@RequestParam(defaultValue = "1000", required = false) Integer size, @RequestParam(defaultValue = "email", required = false) String sortBy)
@@ -63,7 +63,7 @@ public class PortalSignonController {
 		return new ResponseEntity<Signon>(user, new HttpHeaders(), HttpStatus.OK);
 	}
 	
-	@ApiOperation(value="Delete a registered User on Portal.", response=HttpStatus.class, tags="Delete User By Id")
+	@ApiOperation(value="Delete a User on Portal.", response=HttpStatus.class, tags="Delete User By Id")
 	@DeleteMapping("delete")
 	public HttpStatus deleteUserById(@RequestParam("id") Long id) throws RecordNotFoundException {
 		userService.deleteUserById(id);

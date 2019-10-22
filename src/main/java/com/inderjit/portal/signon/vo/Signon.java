@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name="Signon")
 public class Signon {
@@ -13,28 +15,35 @@ public class Signon {
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+	@ApiModelProperty(notes = "First Name of the User",name = "firstName",required = false, value = "Test Firstname")
 	@Column(name="first_name")
 	private String firstName;
 	
+	@ApiModelProperty(notes = "Last Name of the User",name = "lastName",required = false, value = "Test Firstname")	
 	@Column(name="last_name")
 	private String lastName;
 	
+	@ApiModelProperty(notes = "Email of the User",name = "email",required = false, value = "Test Firstname")
 	@Column(name="email", nullable=false, length=200)
 	private String email;
-
+	
+	@ApiModelProperty(notes = "Mobile Number of the User",name = "mobileNo",required = false, value = "Test Firstname")
 	@Column(name="mobileNo", nullable=false, length=15)
 	private String mobileNo;
 
+	@ApiModelProperty(notes = "Login Name of the User",name = "signOn",required = false, value = "Test Firstname")
 	@Column(name="signon_name", nullable=false, length=25)
 	private String signOn;
 	
-	@Column(name="signon_password", nullable=false, length=35)
+	@ApiModelProperty(notes = "Password of the User",name = "signonPassword",required = false, value = "Test Firstname")
+	@Column(name="signon_password", nullable=false, length=60)
 	private String signonPassword;
 	
+	@ApiModelProperty(notes = "Role of the User",name = "signonRole",required = false, value = "Test Firstname")
 	@Column(name="signon_role")
 	private String signonRole;
 	
+	@ApiModelProperty(notes = "Login Status of the User",name = "signonActive",required = false, value = "Test Firstname")	
 	@Column(name="signon_active")
 	private String signonActive;
 	
