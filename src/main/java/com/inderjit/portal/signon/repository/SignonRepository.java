@@ -1,6 +1,7 @@
 package com.inderjit.portal.signon.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,6 @@ public interface SignonRepository extends JpaRepository<Signon, Long> {
 	List<Signon> getAllUsers (Pageable pageable);
 	
 	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1 or s.mobileNo = ?2)") 
-	Signon getUserBySignon (String userName, String mobileNo);
+	Optional<Signon> getUserBySignon (String userName, String mobileNo);
 	
 }

@@ -1,6 +1,5 @@
 package com.inderjit.portal.signon.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,16 +29,19 @@ public class SignonService {
 		if (!signonList.isEmpty()) {
 			return signonList;
 		} else {
-			return new ArrayList<Signon>();
+			if (logger.isEnabled(Level.ERROR))
+				logger.info("Users Not Found : ");
+			throw new RecordNotFoundException("Users Not Found : ");
 		}
 	}
 
 	public Signon getUserBySignon(String signonName, String mobileNo) throws RecordNotFoundException {
-		Signon user = userRepository.getUserBySignon(signonName, mobileNo);
-		if (!user.equals(null)) {
-			return user;
+		Optional<Signon> user = userRepository.getUserBySignon(signonName, mobileNo);
+		if (user.isPresent()) {
+			return user.get();
 		} else {
-			if (logger.isEnabled(Level.INFO)) logger.info("User Not Found : " + signonName);			
+			if (logger.isEnabled(Level.ERROR))
+				logger.info("User Not Found :"+signonName);
 			throw new RecordNotFoundException("User Not Found : " + signonName);
 		}
 	}
@@ -49,22 +51,27 @@ public class SignonService {
 		if (user.isPresent()) {
 			return user.get();
 		} else {
-			if (logger.isEnabled(Level.ERROR)) logger.error("User Not Found with ID : " + id);			
+			if (logger.isEnabled(Level.ERROR))
+				logger.error("User Not Found with ID : " + id);
 			throw new RecordNotFoundException("User Not Found with ID : " + id);
 		}
 	}
 
 	public Signon createOrUpdateUser(Signon user) throws RecordNotFoundException {
-		Optional<Signon> userNew = userRepository.findById(user.getId());
-		if (!userNew.isPresent()) {
-			Signon userToSave = new Signon();
-			userToSave.setId(user.getId());
+		if (user.getId() != 0) {
+			Signon userToSave = userRepository.findById(user.getId()).get();
 			userToSave.setFirstName(user.getFirstName());
-			userToSave.setFirstName(user.getLastName());
+			userToSave.setLastName(user.getLastName());
 			userToSave.setEmail(user.getEmail());
+			userToSave.setMobileNo(user.getMobileNo());
+			userToSave.setSignOn(user.getSignOn());
+			userToSave.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));
+			userToSave.setSignonRole(user.getSignonRole());
+			userToSave.setSignonActive(user.getSignonActive());
 			userRepository.save(userToSave);
 			return userToSave;
 		} else {
+			user.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));			
 			userRepository.save(user);
 			return user;
 		}
@@ -75,7 +82,8 @@ public class SignonService {
 		if (user.isPresent()) {
 			userRepository.deleteById(id);
 		} else {
-			if (logger.isEnabled(Level.INFO)) logger.info("User Not to Delete: " + id);
+			if (logger.isEnabled(Level.ERROR))
+				logger.info("User Not Found to Delete: " + id);
 			throw new RecordNotFoundException("User Not Found to Delete : " + id);
 		}
 	}

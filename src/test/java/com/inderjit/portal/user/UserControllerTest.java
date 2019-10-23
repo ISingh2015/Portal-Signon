@@ -50,4 +50,16 @@ public class UserControllerTest {
 		}
 		assertNotNull(user);
 	}
+
+//	@Test
+	public void registerNew() {
+		Signon user= new Signon(0,"first","last","email@one.com","990","TEST","$2a$10$oQv9u4pkaWnEewfAEtl/TOpz1y816YVgcUDkwm/tEXh0N8Dj47Q1C","Admin","1");
+		try {
+			user = userService.createOrUpdateUser(user);			
+		} catch (Exception e) {
+			
+		}
+		assertNotNull(user);
+	}
+
 }
