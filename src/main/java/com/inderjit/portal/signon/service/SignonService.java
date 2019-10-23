@@ -3,6 +3,8 @@ package com.inderjit.portal.signon.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.inderjit.portal.exception.RecordNotFoundException;
 import com.inderjit.portal.signon.repository.SignonRepository;
@@ -23,7 +26,8 @@ public class SignonService {
 	private SignonRepository userRepository;
 
 	static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+	
+	@Transactional(rollbackOn = RecordNotFoundException.class)
 	public List<Signon> getAllUsers(Pageable pageable) {
 		List<Signon> signonList = userRepository.getAllUsers(pageable);
 		if (!signonList.isEmpty()) {
@@ -57,6 +61,7 @@ public class SignonService {
 		}
 	}
 
+	@Transactional(rollbackOn = RecordNotFoundException.class)	
 	public Signon createOrUpdateUser(Signon user) throws RecordNotFoundException {
 		if (user.getId() != 0) {
 			Signon userToSave = userRepository.findById(user.getId()).get();
@@ -77,6 +82,7 @@ public class SignonService {
 		}
 	}
 
+	@Transactional(rollbackOn = RecordNotFoundException.class)
 	public void deleteUserById(Long id) throws RecordNotFoundException {
 		Optional<Signon> user = userRepository.findById(id);
 		if (user.isPresent()) {

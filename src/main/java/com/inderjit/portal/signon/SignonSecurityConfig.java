@@ -33,5 +33,6 @@ public class SignonSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(signonUserDetailService).passwordEncoder(passwordEncoder);
 	}
+	
 
 }

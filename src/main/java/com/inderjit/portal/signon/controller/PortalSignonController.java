@@ -27,7 +27,7 @@ import com.inderjit.portal.signon.vo.Signon;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value = "PortalSignonController")
+@Api(value = "PortalSignonController",description = "DD")
 @RestController
 @RequestMapping("/portalSignon")
 public class PortalSignonController {

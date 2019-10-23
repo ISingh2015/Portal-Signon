@@ -25,7 +25,7 @@ public class UserControllerTest {
 
 	@Test
 	public void getAllUsersTest() {
-		Pageable pageable = PageRequest.of(10, 100,new Sort(Direction.ASC,"email"));
+		Pageable pageable = PageRequest.of(0, 100,new Sort(Direction.ASC,"email"));
 		assertNotNull(userService.getAllUsers(pageable));
 	}
 
