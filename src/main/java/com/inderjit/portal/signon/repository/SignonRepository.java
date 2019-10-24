@@ -17,6 +17,15 @@ public interface SignonRepository extends JpaRepository<Signon, Long> {
 	List<Signon> getAllUsers (Pageable pageable);
 	
 	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1 or s.mobileNo = ?2)") 
-	Optional<Signon> getUserBySignon (String userName, String mobileNo);
+	Optional<Signon> getUserBySignonAndMobile (String userName, String mobileNo);
 	
+	@Query ("select s from Signon s where s.signonActive=1 and (s.email = ?1)") 
+	Optional<Signon> checkIfDuplicateEmail(String email);
+
+	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1)") 
+	Optional<Signon> checkIfDuplicateSignon (String userName);
+
+	@Query ("select s from Signon s where s.signonActive=1 and (s.mobileNo = ?1)") 
+	Optional<Signon> checkIfDuplicateMobileNo (String mobileNo);
+
 }

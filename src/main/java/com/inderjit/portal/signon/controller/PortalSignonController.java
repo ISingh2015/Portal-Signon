@@ -27,7 +27,7 @@ import com.inderjit.portal.signon.vo.Signon;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(value = "PortalSignonController",description = "DD")
+@Api(value = "PortalSignonController", description = "DD")
 @RestController
 @RequestMapping("/portalSignon")
 public class PortalSignonController {
@@ -35,38 +35,39 @@ public class PortalSignonController {
 	@Autowired
 	SignonService userService;
 
-	@ApiOperation(value="Get a List of Users on the Portal.", response=List.class, tags="Get All Users")
+	@ApiOperation(value = "Get a List of Users on the Portal.", response = List.class, tags = "Get All Users")
 	@GetMapping("getAll")
 	public ResponseEntity<List<Signon>> getAllUsers(@RequestParam(defaultValue = "0", required = false) Integer pageNo,
-			@RequestParam(defaultValue = "1000", required = false) Integer size, @RequestParam(defaultValue = "email", required = false) String sortBy)
-			throws RecordNotFoundException {
-		Pageable pageable = PageRequest.of(pageNo, size, new Sort(Direction.ASC, sortBy));
+			@RequestParam(defaultValue = "1000", required = false) Integer size,
+			@RequestParam(defaultValue = "email", required = false) String sortBy,
+			@RequestParam(defaultValue = "ASC", required = false) String sortOrd) throws RecordNotFoundException {
+		Pageable pageable = PageRequest.of(pageNo, size, new Sort((sortOrd.equalsIgnoreCase("asc") ? Direction.ASC : Direction.DESC), sortBy));
 		List<Signon> userList = userService.getAllUsers(pageable);
 		return new ResponseEntity<List<Signon>>(userList, new HttpHeaders(), HttpStatus.OK);
 	}
-	
-	@ApiOperation(value="Register new User on Portal.", response=Signon.class, tags="Register New")
+
+	@ApiOperation(value = "Register new User on Portal.", response = Signon.class, tags = "Register New")
 	@PostMapping("register")
 	public ResponseEntity<Signon> register(@Valid @RequestBody Signon user) throws RecordNotFoundException {
 		Signon userSaved = userService.createOrUpdateUser(user);
 		return new ResponseEntity<Signon>(userSaved, new HttpHeaders(), HttpStatus.OK);
 	}
-	
-	@ApiOperation(value="Get a registered User on Portal.", response=Signon.class, tags="Get User By Id")
+
+	@ApiOperation(value = "Get a registered User on Portal.", response = Signon.class, tags = "Get User By Id")
 	@GetMapping("get/{id}")
 	public ResponseEntity<Signon> getUserById(@RequestParam("id") Long id) throws RecordNotFoundException {
 		Signon user = userService.getUserById(id);
 		return new ResponseEntity<Signon>(user, new HttpHeaders(), HttpStatus.OK);
 	}
 
-	@ApiOperation(value="Sign in a active registered User on Portal.", response=Signon.class, tags="Authenticate-SignOn")
+	@ApiOperation(value = "Sign in a active registered User on Portal.", response = Signon.class, tags = "Authenticate-SignOn")
 	@GetMapping("authenticate")
 	public ResponseEntity<Signon> authenticate(String signOn, String mobileNo) throws RecordNotFoundException {
 		Signon user = userService.getUserBySignon(signOn, mobileNo);
 		return new ResponseEntity<Signon>(user, new HttpHeaders(), HttpStatus.OK);
 	}
-	
-	@ApiOperation(value="Delete a User on Portal.", response=HttpStatus.class, tags="Delete User By Id")
+
+	@ApiOperation(value = "Delete a User on Portal.", response = HttpStatus.class, tags = "Delete User By Id")
 	@DeleteMapping("delete")
 	public HttpStatus deleteUserById(@RequestParam("id") Long id) throws RecordNotFoundException {
 		userService.deleteUserById(id);
