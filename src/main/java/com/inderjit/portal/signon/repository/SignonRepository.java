@@ -13,19 +13,19 @@ import com.inderjit.portal.signon.vo.Signon;
 @Repository
 public interface SignonRepository extends JpaRepository<Signon, Long> {
 	
-	@Query ("FROM Signon s where s.signonActive=1") 
+	@Query ("FROM Signon s where s.signonEnabled is not null") 
 	List<Signon> getAllUsers (Pageable pageable);
 	
-	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1 or s.mobileNo = ?2)") 
+	@Query ("select s from Signon s where (s.signOn = ?1 or s.mobileNo = ?2)") 
 	Optional<Signon> getUserBySignonAndMobile (String userName, String mobileNo);
 	
-	@Query ("select s from Signon s where s.signonActive=1 and (s.email = ?1)") 
+	@Query ("select s from Signon s where (s.email = ?1)") 
 	Optional<Signon> checkIfDuplicateEmail(String email);
 
-	@Query ("select s from Signon s where s.signonActive=1 and (s.signOn = ?1)") 
+	@Query ("select s from Signon s where (s.signOn = ?1)") 
 	Optional<Signon> checkIfDuplicateSignon (String userName);
 
-	@Query ("select s from Signon s where s.signonActive=1 and (s.mobileNo = ?1)") 
+	@Query ("select s from Signon s where (s.mobileNo = ?1)") 
 	Optional<Signon> checkIfDuplicateMobileNo (String mobileNo);
 
 }

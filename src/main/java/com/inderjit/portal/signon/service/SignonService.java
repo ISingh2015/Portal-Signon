@@ -40,7 +40,6 @@ public class SignonService {
 
 	public Signon getUserBySignon(String signonName, String mobileNo) throws RecordNotFoundException {
 		Optional<Signon> user = signonRepository.getUserBySignonAndMobile(signonName, mobileNo);
-
 		if (user.isPresent()) {
 			return user.get();
 		} else {
@@ -63,6 +62,45 @@ public class SignonService {
 
 	@Transactional(rollbackOn = RecordNotFoundException.class)
 	public Signon createOrUpdateUser(Signon user) throws RecordNotFoundException {
+		if (user.getId() != 0) {
+			Signon userToSave = signonRepository.findById(user.getId()).get();
+			userToSave.setFirstName(user.getFirstName());
+			userToSave.setLastName(user.getLastName());
+			userToSave.setEmail(user.getEmail());
+			userToSave.setMobileNo(user.getMobileNo());
+			userToSave.setSignOn(user.getSignOn());
+			userToSave.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));
+			userToSave.setSignonRole(user.getSignonRole());
+			userToSave.setSignonEnabled(user.isSignonEnabled());
+			userToSave.setUpdatedBy(user.getUpdatedBy());
+			userToSave.setUpdateDate(user.getUpdateDate());
+			signonRepository.save(userToSave);
+			return userToSave;
+		} else {
+			if (validateSignOn(user)) {
+				user.setCreatedBy(user.getCreatedBy());
+				user.setCreateDate(user.getCreateDate());
+				user.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));
+				signonRepository.save(user);
+			}
+			return user;
+		}
+	}
+
+	@Transactional(rollbackOn = RecordNotFoundException.class)
+	public boolean deleteUserById(Long id) throws RecordNotFoundException {
+		Optional<Signon> user = signonRepository.findById(id);
+		if (user.isPresent()) {
+			signonRepository.deleteById(id);
+			return true;
+		} else {
+			if (logger.isEnabled(Level.ERROR))
+				logger.info("User Not Found to Delete: " + id);
+			throw new RecordNotFoundException("User Not Found to Delete : " + id);
+		}
+	}
+
+	private boolean validateSignOn(Signon user) {
 		if (signonRepository.checkIfDuplicateEmail(user.getEmail()).isPresent()) {
 			if (logger.isEnabled(Level.ERROR))
 				logger.info("Email already registered: " + user.getSignOn());
@@ -79,35 +117,17 @@ public class SignonService {
 			throw new RecordNotFoundException("MobileNo already registered: " + user.getSignOn());
 
 		}
-		if (user.getId() != 0) {
-			Signon userToSave = signonRepository.findById(user.getId()).get();
-			userToSave.setFirstName(user.getFirstName());
-			userToSave.setLastName(user.getLastName());
-			userToSave.setEmail(user.getEmail());
-			userToSave.setMobileNo(user.getMobileNo());
-			userToSave.setSignOn(user.getSignOn());
-			userToSave.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));
-			userToSave.setSignonRole(user.getSignonRole());
-			userToSave.setSignonActive(user.getSignonActive());
-			signonRepository.save(userToSave);
-			return userToSave;
-		} else {
-			user.setSignonPassword(passwordEncoder.encode(user.getSignonPassword()));
-			signonRepository.save(user);
-			return user;
-		}
+		return true;
 	}
 
-	@Transactional(rollbackOn = RecordNotFoundException.class)
-	public void deleteUserById(Long id) throws RecordNotFoundException {
-		Optional<Signon> user = signonRepository.findById(id);
-		if (user.isPresent()) {
-			signonRepository.deleteById(id);
-		} else {
-			if (logger.isEnabled(Level.ERROR))
-				logger.info("User Not Found to Delete: " + id);
-			throw new RecordNotFoundException("User Not Found to Delete : " + id);
-		}
-	}
+//	private void createAuthentication(String username, String password) throws RecordNotFoundException{
+//		try {
+//			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+//		} catch (DisabledException e) {
+//			throw new RecordNotFoundException("User Disabled : " + username);
+//		} catch (BadCredentialsException e) {
+//			throw new RecordNotFoundException("Invalid Credentails: " + username);			
+//		}
+//	}	
 
 }
